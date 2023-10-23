@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://raw.githubusercontent.com/hrt014pocky/pocky/main/pic_blogBuild/Azuki7507_180x180.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://raw.githubusercontent.com/hrt014pocky/pocky/main/pic_blogBuild/Azuki7507_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://raw.githubusercontent.com/hrt014pocky/pocky/main/pic_blogBuild/Azuki7507_16x16.png">
+  <link rel="mask-icon" href="https://raw.githubusercontent.com/hrt014pocky/pocky/main/pic_blogBuild/Azuki7507_32x32.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="网络变压器在以太网中的作用及功能 https:&#x2F;&#x2F;www.elecfans.com&#x2F;d&#x2F;1852868.html 以太网交换机等数据泵是消费级PCI网卡上都具备的设备，数据泵也被叫做网络变压器或可称为网络隔离变压器。 它在一块网卡上所起的作用主要有两个，一是传输数据，它把PHY送出来的差分信号用差模耦合的线圈耦合滤波以增强信号，并且通过电磁场的转换耦合到不同电平的连接网线的另外一端是隔离网线">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EtherCAT笔记">
+<meta property="og:url" content="http://example.com/2022/11/15/EtherCAT%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Pocky的个人博客">
+<meta property="og:description" content="网络变压器在以太网中的作用及功能 https:&#x2F;&#x2F;www.elecfans.com&#x2F;d&#x2F;1852868.html 以太网交换机等数据泵是消费级PCI网卡上都具备的设备，数据泵也被叫做网络变压器或可称为网络隔离变压器。 它在一块网卡上所起的作用主要有两个，一是传输数据，它把PHY送出来的差分信号用差模耦合的线圈耦合滤波以增强信号，并且通过电磁场的转换耦合到不同电平的连接网线的另外一端是隔离网线">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-11-15T02:16:39.000Z">
+<meta property="article:modified_time" content="2023-10-23T07:05:22.649Z">
+<meta property="article:author" content="Pocky">
+<meta property="article:tag" content="EtherCAT">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/11/15/EtherCAT%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>EtherCAT笔记 | Pocky的个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Pocky的个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/home/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/15/EtherCAT%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://raw.githubusercontent.com/hrt014pocky/pocky/main/pic_blogBuild/Azuki7507.png">
+      <meta itemprop="name" content="Pocky">
+      <meta itemprop="description" content="做一个观察者 超越思维 保持临在">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pocky的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          EtherCAT笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-11-15 10:16:39" itemprop="dateCreated datePublished" datetime="2022-11-15T10:16:39+08:00">2022-11-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-10-23 15:05:22" itemprop="dateModified" datetime="2023-10-23T15:05:22+08:00">2023-10-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1
+id="网络变压器在以太网中的作用及功能">网络变压器在以太网中的作用及功能</h1>
+<p>https://www.elecfans.com/d/1852868.html</p>
+<p>以太网交换机等数据泵是消费级PCI网卡上都具备的设备，数据泵也被叫做网络变压器或可称为网络隔离变压器。</p>
+<p>它在一块网卡上所起的作用主要有两个，一是传输数据，它把PHY送出来的差分信号用差模耦合的线圈耦合滤波以增强信号，并且通过电磁场的转换耦合到不同电平的连接网线的另外一端是隔离网线连接的不同网络设备间的不同电平，以防止不同电压通过网线传输损坏设备。除此而外，数据汞还能对设备起到一定的防雷保护作用。</p>
+<h2 id="网络变压器在以太网中的作用">网络变压器在以太网中的作用：</h2>
+<p>在以太网设备中，通过PHY接RJ45时，中间都会加一个网络变压器。有的变压器中心抽头接到地。而且接电源时，电源值又可以不一样，3.3V，2.5V，1.8V都有。这个变压器的作用分析如下:</p>
+<p>1、中间抽头为什么有些接电源?有些接地?这个主要是与使用的PHY芯片UTP口驱动类型决定的，这种驱动类型有两种，电压驱动和电流驱动。电压驱动的，需要将抽头接到电源;电流驱动的就通过电容接地。所以对于不同的芯片，中心抽头的接法，与PHY是有密切关系的，具体还要参看芯片的datasheet和参考设计了。</p>
+<p>2、为什么接电源时，又接不同的电压呢?这个也是所使用的PHY芯片资料里规定的UTP端口电平决定的。决定的什么电平，就得接相应的电压了。即如果是2.5v的就上拉到2.5v，如果是3.3v的就上拉到3.3v。</p>
+<p>⒊这个变压器到底是什么作用呢，可不可以不接呢。从理论上来说，是可以不需要接变压器，直接接到RJ45上，也是能正常工作的。但是呢，传输距离就很受限制，而且当接到不同电平网口时，也会有影响。而且外部对芯片的干扰也很大。当接了网络变压器后，它主要用于信号电平耦合。其一，可以增强信号，使其传输距离更远;其二，使芯片端与外部隔离，抗干扰能力大大增强，而且对芯片增加了很大的保护作用(如雷击);其三，当接到不同电平(如有的PHY芯片是2.5V，有的PHY芯片是3.3V)的网口时，不会对彼此设备造成影响。</p>
+<h2 id="网络变压器功能具体说明">网络变压器功能具体说明</h2>
+<h3 id="一电气隔离">一、电气隔离</h3>
+<p>任何CMOS制程的芯片工作的时候产生的信号电平总是大于0V的(取决于芯片的制程和设计需求)，PHY输出信号送到100米甚至更长的地方会有很大的直流分量的损失。而且如果外部网线直接和芯片相连的话，电磁感应(打雷)和静电，很容易造成芯片的损坏。</p>
+<p>再就是设备接地方法不同，电网环境不同会导致双方的0V电平不一致，这样信号从A传到B，由于A设备的0V电平和B点的0V电平不一样，这样可能会导致很大的电流从电势高的设备流向电势低的设备。</p>
+<p>网络变压器把PHY送出来的差分信号用差模耦合的线圈耦合滤波以增强信号，并且通过电磁场的转换耦合到连接网线的另外一端。这样不但使网线和PHY之间没有物理上的连接而换传递了信号，隔断了信号中的直流分量，还可以在不同0V电平的设备中传送数据。</p>
+<p>网络变压器本身就是设计为耐2KV~3KV的电压的。也起到了防雷保护作用。有些朋友的网络设备在雷雨天气时容易被烧坏，大都是PCB设计不合理造成的，而且大都烧毁了设备的接口，很少有芯片被烧毁的，就是变压器起到了保护作用。</p>
+<p>隔离变压器可满足IEEE802.3的绝缘要求，但不能抑制EMI。</p>
+<h3 id="二共模抑制">二、共模抑制</h3>
+<p>在双绞线中的每一根导线是以双螺旋形结构相互缠绕着。流过每根导线的电流所产生的磁场受螺旋形的制约。流过双绞线中每一根导线的电流方向，决定每对导线发射噪音的程度。在每对导线上流过差模和共模电流所引起的发射程度是不同的，差模电流引起的噪音发射是较小的，所以噪音主要是由共模电流决定。</p>
+<p>⒈ 双绞线中的差模信号</p>
+<p>对差模信号而言，它在每一根导线上的电流是以相反方向在一对导线上传送。如果这一对导线是均匀的缠绕，这些相反的电流就会产生大小相等，反向极化的磁场，使它的输出互相抵消。</p>
+<p>⒉ 双绞线中的共模信号</p>
+<p>共模电流在两根导线上以相同方向流动，并经过寄生电容Cp到地返回。在这种情况下，电流产生大小相等极性相同的磁场，它们的输出不能相互抵消。共模电流在对绞线的表面产生一个电磁场，它的作用正如天线一样。</p>
+<h3 id="三共模差模噪音及其emc">三、共模、差模噪音及其EMC</h3>
+<p>电缆上噪音有从电源电缆和信号电缆上产生的辐射噪音和传导噪音两大类。这两大类中又分为共模噪音和差模噪音两种。差模传导噪音是电子设备内部噪音电压产生的与信号电流或电源电流相同路径的噪音电流，如图4所示。减小这种噪音的方法是在信号线和电源线上串联差模扼流圈、并联电容或用电容和电感组成低通滤波器，来减小高频的噪音。</p>
+<p>这种噪音产生的电场强度与电缆到观测点的距离成反比，与频率的平方成正比，与电流和电流环路的面积成正比。因此，减小这种辐射的方法是在信号输入端加LC低通滤波器阻止噪音电流流进电缆;使用屏蔽电缆或扁平电缆，在相邻的导线中传输回流电流和信号电流，使环路面积减小。</p>
+<p>共模传导噪音是在设备内噪音电压的驱动下，经过大地与设备之间的寄生电容，在大地与电缆之间流动的噪音电流产生的。</p>
+<p>减小共模传导噪音的方法是在信号线或电源线中串联共模扼流圈、在地与导线之间并联电容器、组成LC滤波器进行滤波，滤去共模传导噪声。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/EtherCAT/" rel="tag"># EtherCAT</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/11/13/Git-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/" rel="prev" title="Git 使用说明">
+      <i class="fa fa-chevron-left"></i> Git 使用说明
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/12/03/motor-note/" rel="next" title="麦克斯韦方程组">
+      麦克斯韦方程组 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%8F%98%E5%8E%8B%E5%99%A8%E5%9C%A8%E4%BB%A5%E5%A4%AA%E7%BD%91%E4%B8%AD%E7%9A%84%E4%BD%9C%E7%94%A8%E5%8F%8A%E5%8A%9F%E8%83%BD"><span class="nav-number">1.</span> <span class="nav-text">网络变压器在以太网中的作用及功能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%8F%98%E5%8E%8B%E5%99%A8%E5%9C%A8%E4%BB%A5%E5%A4%AA%E7%BD%91%E4%B8%AD%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">1.1.</span> <span class="nav-text">网络变压器在以太网中的作用：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%8F%98%E5%8E%8B%E5%99%A8%E5%8A%9F%E8%83%BD%E5%85%B7%E4%BD%93%E8%AF%B4%E6%98%8E"><span class="nav-number">1.2.</span> <span class="nav-text">网络变压器功能具体说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E7%94%B5%E6%B0%94%E9%9A%94%E7%A6%BB"><span class="nav-number">1.2.1.</span> <span class="nav-text">一、电气隔离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E5%85%B1%E6%A8%A1%E6%8A%91%E5%88%B6"><span class="nav-number">1.2.2.</span> <span class="nav-text">二、共模抑制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E5%85%B1%E6%A8%A1%E5%B7%AE%E6%A8%A1%E5%99%AA%E9%9F%B3%E5%8F%8A%E5%85%B6emc"><span class="nav-number">1.2.3.</span> <span class="nav-text">三、共模、差模噪音及其EMC</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Pocky"
+      src="https://raw.githubusercontent.com/hrt014pocky/pocky/main/pic_blogBuild/Azuki7507.png">
+  <p class="site-author-name" itemprop="name">Pocky</p>
+  <div class="site-description" itemprop="description">做一个观察者 超越思维 保持临在</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hrt014pocky" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hrt014pocky" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Pocky</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
