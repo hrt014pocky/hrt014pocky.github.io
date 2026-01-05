@@ -505,6 +505,7 @@ h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">​</span
   <script src="/lib/anime.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/mermaid@8.13.8/dist/mermaid.min.js"></script>
 
 <script src="/js/utils.js"></script>
 
@@ -517,6 +518,8 @@ h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">​</span
 <script src="/js/next-boot.js"></script>
 
 
+
+<script src="/js/mermaid-init.js"></script>
 
 
   
@@ -535,7 +538,7 @@ h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">​</span
 
 <script>
 if (document.querySelectorAll('pre.mermaid').length) {
-  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8.13.8/dist/mermaid.min.js', () => {
     mermaid.initialize({
       theme    : '[object Object]',
       logLevel : 3,

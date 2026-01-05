@@ -555,6 +555,7 @@ f\left( t \right) = \sum\limits_{n =  - \infty }^\infty  {\frac{1}{T}\int_{ - \f
   <script src="/lib/anime.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/mermaid@8.13.8/dist/mermaid.min.js"></script>
 
 <script src="/js/utils.js"></script>
 
@@ -567,6 +568,8 @@ f\left( t \right) = \sum\limits_{n =  - \infty }^\infty  {\frac{1}{T}\int_{ - \f
 <script src="/js/next-boot.js"></script>
 
 
+
+<script src="/js/mermaid-init.js"></script>
 
 
   
@@ -585,7 +588,7 @@ f\left( t \right) = \sum\limits_{n =  - \infty }^\infty  {\frac{1}{T}\int_{ - \f
 
 <script>
 if (document.querySelectorAll('pre.mermaid').length) {
-  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8.13.8/dist/mermaid.min.js', () => {
     mermaid.initialize({
       theme    : '[object Object]',
       logLevel : 3,
